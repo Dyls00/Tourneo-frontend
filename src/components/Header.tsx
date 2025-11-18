@@ -1,17 +1,15 @@
-import type { FC } from "react"
+import type { FC } from "react";
+import "./Header.css"
 import { Nav } from "./Nav";
+import logo from "../assets/logo.jpeg";
 
-export const Header: FC = () =>{
-     return (
-        <header>
-          <div className="header row">
-            <div className="logo col-4">
-              <img src="\images\infinix.png" alt="logo" width={120}/>
+export const Header: FC = () => {
+    return (
+        <header className="row">
+            <img className="img-fluid logo col-2" src={logo} alt="my shop" />
+            <div className="col-10">
+                <Nav/>
             </div>
-            <div className="right col-8">
-              <Nav/>
-            </div>
-          </div>
         </header>
-  );
+    );
 }
