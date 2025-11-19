@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import "./Main.css"
 import { useUser } from "../user";
 import image1 from "../assets/1.png";
 

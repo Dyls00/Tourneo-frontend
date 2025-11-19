@@ -1,6 +1,5 @@
 import { type FC } from "react";
 import { useNavigate } from "react-router";
-import "./Nav.css";
 import { useUser } from "../user";
 
 export const Nav: FC = () => {
