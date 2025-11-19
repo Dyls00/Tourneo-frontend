@@ -1,29 +1,19 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 
-type User = { id: string; name: string };
+type User = {
+  id: string;
+  name: string;
+  email?: string;
+  role?: string;
+};
 
-type UserState = { user: User | null };
-
-type Action =
-  | { type: "login"; payload: User }
-  | { type: "logout" };
-
-function userReducer(state: UserState, action: Action): UserState {
-  switch (action.type) {
-    case "login":
-      return { user: action.payload };
-    case "logout":
-      return { user: null };
-    default:
-      return state;
-  }
-}
-
-export const UserContext = createContext<{
+type UserContextType = {
   user: User | null;
-  login: (u: User) => void;
+  login: (user: User) => void;
   logout: () => void;
-}>({
+};
+
+export const UserContext = createContext<UserContextType>({
   user: null,
   login: () => {},
   logout: () => {},
@@ -33,8 +23,33 @@ export function useUser() {
   return useContext(UserContext);
 }
 
-export function UserProvider({ children }: any) {
-  const [state, dispatch] = useReducer(userReducer, { user: null });
+// Reducer pour gérer login/logout
+function userReducer(state: User | null, action: { type: string; payload?: User }) {
+  switch (action.type) {
+    case "login":
+      return action.payload || null;
+    case "logout":
+      return null;
+    default:
+      return state;
+  }
+}
+
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  
+  const storedUser = typeof window !== "undefined" 
+    ? JSON.parse(localStorage.getItem("user") || "null")
+    : null;
+
+  const [user, dispatch] = useReducer(userReducer, storedUser);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
 
   function login(user: User) {
     dispatch({ type: "login", payload: user });
@@ -45,7 +60,7 @@ export function UserProvider({ children }: any) {
   }
 
   return (
-    <UserContext.Provider value={{ user: state.user, login, logout }}>
+    <UserContext.Provider value={{ user, login, logout }}>
       {children}
     </UserContext.Provider>
   );

@@ -26,15 +26,18 @@ export const Nav: FC = () => {
                 <li><a className="hover:text-white/70 transition" href="#">Tournois</a></li>
                 <li><a className="hover:text-white/70 transition" href="#">Matches</a></li>
                 <li><a className="hover:text-white/70 transition" href="#">Poules</a></li>
+                <li></li>
+                <li></li>
+                <li className="profil">Bienvenue {user.name} !</li>
             </ul>
                 )}
             {user && (
-            <button type="button" onClick={logout} className="bg-white text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
+            <button type="button" onClick={logout} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
                 Se déconnecter
             </button>
             )}
             {!user && (
-            <button type="button" onClick={handleLogin} className="bg-white text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
+            <button type="button" onClick={handleLogin} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
                 Se connecter
             </button>
             )}
