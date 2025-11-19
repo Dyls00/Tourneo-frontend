@@ -3,7 +3,6 @@ import { createContext, useContext, useReducer, useState } from "react";
 type User = {
     id: string,
     name: string,
-    avatar: string
 }
 export const UserContext = createContext<{user : User | null,login : any,logout : any}>({user : null, login : () => {},logout : () => {}});
 

@@ -5,6 +5,9 @@ export const Main
 : FC = () => {
     return (
         <main>
+            <div className="container">
+                
+            </div>
         </main>
     );
 }
