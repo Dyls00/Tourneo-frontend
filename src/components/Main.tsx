@@ -8,7 +8,7 @@ export const Main: FC = () => {
     const {user} = useUser();
     return (
         <main>
-            <div className="container">
+            <div className="main-content">
         {!user && 
         
         <div className="main-unlogged">
