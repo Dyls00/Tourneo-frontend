@@ -1,3 +1,5 @@
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
+
 
 export const Login = () => {
   return (
@@ -19,10 +21,21 @@ export const Login = () => {
                 </div>
                 <div className="flip-card__back">
                     <div className="title">Sign up</div>
-                    <form className="flip-card__form" action="">
+                    <form className="flip-card__form" action="POST">
                     <input className="flip-card__input" placeholder="Name" type="name" />
                     <input className="flip-card__input" name="email" placeholder="Email" type="email" />
                     <input className="flip-card__input" name="password" placeholder="Password" type="password" />
+                    <FormControl>
+                        <FormLabel id="demo-radio">Role</FormLabel>
+                            <RadioGroup
+                                aria-labelledby="demo-radio-buttons-group-label"
+                                defaultValue="Organisateur"
+                                name="radio-buttons-group"
+                            >
+                                <FormControlLabel value="Organisateur" control={<Radio />} label="Organisateur" />
+                                <FormControlLabel value="Joueur" control={<Radio />} label="Joueur" />
+                            </RadioGroup>
+                    </FormControl>
                     <button className="flip-card__btn">Confirm!</button>
                     </form>
                 </div>

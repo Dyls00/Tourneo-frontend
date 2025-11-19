@@ -25,7 +25,7 @@ export const Nav: FC = () => {
           <text
             x="40"
             y="32"
-            font-family="Arial, sans-serif"
+            font-family="'Poppins', sans-serif"
             font-size="25"
             fill="#ffffff"
           >
@@ -40,7 +40,7 @@ export const Nav: FC = () => {
           />
         </svg>
       </a>
-
+    {user && (
       <ul className="text-white md:flex hidden items-center gap-10">
         <li>
           <a className="hover:text-white/70 transition" href="#">
@@ -63,7 +63,8 @@ export const Nav: FC = () => {
           </a>
         </li>
       </ul>
-      <div className="log">
+      )}
+      <div className="btn-log">
         {!user && (
           <button
             type="button"

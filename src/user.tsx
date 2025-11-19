@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useState } from "react";
+import { createContext, useContext, useReducer } from "react";
 
 type User = {
     id: string,
@@ -9,6 +9,7 @@ export const UserContext = createContext<{user : User | null,login : any,logout 
 export function useUser() {
     return useContext(UserContext);
 }
+
 export function UserProvider({ children }: any) {
 
     const [user, dispatch] = useReducer(userReducer, null);
