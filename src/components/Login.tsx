@@ -28,11 +28,14 @@ export const Login = () => {
  
     const json = await res.json();
 
-    if (json?.data.user) {
-      login({ id: json.data.user.id, name: json.data.user.name });  
-      console.log(data);     
-      navigate("/");          
+    if(json.success === false){
+    alert(json.message);
     }
+
+    if (json?.data.user) {
+      login({ id: json.data.user.id, name: json.data.user.name });     
+      navigate("/");          
+    } 
   };
 
     const onSignup = async (data:any) => {
@@ -43,11 +46,13 @@ export const Login = () => {
     });
 
     const json = await res.json();
-    navigate("/"); 
+    
+    if(json.success === false){
+    alert(json.message);
+    }
 
     if (json?.data.user) {
-      login({ id: json.data.user.id, name: json.data.user.name });  
-      console.log(data);     
+      login({ id: json.data.user.id, name: json.data.user.name });    
       navigate("/");          
     }
   };
