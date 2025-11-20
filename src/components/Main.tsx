@@ -11,7 +11,7 @@ export const Main: FC = () => {
         {!user && 
         
         <div className="main-unlogged">
-            <div><img src={image1} alt="" width={600} /></div>
+            <div><img src={image1} alt="" width={500} /></div>
             <div className="main-text"><p >Tourneo est une application conçue pour faciliter 
                 l’organisation et la gestion de tournois de tennis et de padel amateur. 
                 Elle offre aux organisateurs la possibilité de créer des tournois auto-organisés, 
