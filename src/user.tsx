@@ -4,6 +4,7 @@ type User = {
   id: string;
   name: string;
   email?: string;
+  token: string;
   role?: string;
 };
 
@@ -24,7 +25,10 @@ export function useUser() {
 }
 
 // Reducer pour gérer login/logout
-function userReducer(state: User | null, action: { type: string; payload?: User }) {
+function userReducer(
+  state: User | null,
+  action: { type: string; payload?: User }
+) {
   switch (action.type) {
     case "login":
       return action.payload || null;
@@ -36,10 +40,10 @@ function userReducer(state: User | null, action: { type: string; payload?: User 
 }
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  
-  const storedUser = typeof window !== "undefined" 
-    ? JSON.parse(localStorage.getItem("user") || "null")
-    : null;
+  const storedUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user") || "null")
+      : null;
 
   const [user, dispatch] = useReducer(userReducer, storedUser);
 

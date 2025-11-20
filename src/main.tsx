@@ -4,7 +4,9 @@ import App from "./App.tsx";
 import { UserProvider } from "./user.tsx";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { Login } from "./components/Login.tsx";
-import { MatchesList } from "./components/Matches/MatchesList.tsx";
+import Matchesadd from "./components/Matches/Matchesadd.tsx";
+import PoolAdd from "./components/pool/pooladd.tsx";
+import PoolList from "./components/pool/poollist.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,7 +16,9 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<App />}></Route>
           <Route path="/login" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/MatchList" element={<MatchesList />} />
+          <Route path="/matchadd" element={<Matchesadd />} />
+          <Route path="/pooladd" element={<PoolAdd />} />
+          <Route path="/poollist" element={<PoolList />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>

@@ -1,7 +1,6 @@
 import { type FC } from "react";
 import { useNavigate } from "react-router";
 import { useUser } from "../user";
-import { MatchesList } from "./Matches/MatchesList";
 export const Nav: FC = () => {
   const { user, logout } = useUser();
   const navigate = useNavigate();
@@ -47,12 +46,12 @@ export const Nav: FC = () => {
             </a>
           </li>
           <li>
-            <a className="hover:text-white/70 transition" href="/MatchList">
+            <a className="hover:text-white/70 transition" href="/matchadd">
               Matches
             </a>
           </li>
           <li>
-            <a className="hover:text-white/70 transition" href="#">
+            <a className="hover:text-white/70 transition" href="/pooladd">
               Poules
             </a>
           </li>

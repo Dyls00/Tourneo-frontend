@@ -1,179 +1,298 @@
 import React, { useState, useEffect } from "react";
 import {
+  Box,
   Container,
-  Paper,
   Typography,
-  TextField,
   Button,
-  Stack,
+  Paper,
+  TextField,
   MenuItem,
   Alert,
-  Box,
   CircularProgress,
+  Stack,
+  Breadcrumbs,
+  Link,
+  Chip,
 } from "@mui/material";
-import { ArrowBack as BackIcon, Save as SaveIcon } from "@mui/icons-material";
+import {
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  SportsBaseball as MatchIcon,
+  NavigateNext as NavigateNextIcon,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router";
+import { useUser } from "../../user";
 
-// Types
+const API_URL = "http://localhost:3000/api";
+
 interface Tournament {
   id: number;
   name: string;
+  status: string;
 }
 
 interface Pool {
   id: number;
   name: string;
   tournament_id: number;
+  pool_order: number;
 }
 
 interface Player {
-  id: number;
-  name: string;
-  first_name: string;
-  last_name: string;
+  user_id: number;
+  username: string;
+  full_name?: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+interface MatchFormData {
+  tournament_id: string;
+  pool_id: string;
+  player1_id: string;
+  player2_id: string;
+  match_date: string;
+  match_time: string;
+  court_number: string;
+  round: string;
+}
 
 const MatchAdd: React.FC = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [loadingData, setLoadingData] = useState(true);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const { user } = useUser();
 
-  // Données de référence
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [pools, setPools] = useState<Pool[]>([]);
-  const [players, setPlayers] = useState<Player[]>([]);
-
-  // Formulaire
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<MatchFormData>({
     tournament_id: "",
     pool_id: "",
     player1_id: "",
     player2_id: "",
-    round: "Poules",
     match_date: "",
-    court: "",
+    match_time: "",
+    court_number: "1",
+    round: "1",
   });
 
-  // Charger les données de référence
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [pools, setPools] = useState<Pool[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const headers = {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        };
-
-        // Charger les tournois
-        const tournamentsRes = await fetch(`${API_URL}/tournaments`, {
-          headers,
-        });
-        if (tournamentsRes.ok) {
-          const tournamentsData = await tournamentsRes.json();
-          setTournaments(tournamentsData);
-        }
-
-        // Charger les poules
-        const poolsRes = await fetch(`${API_URL}/pools`, { headers });
-        if (poolsRes.ok) {
-          const poolsData = await poolsRes.json();
-          setPools(poolsData);
-        }
-
-        // Charger les joueurs
-        const playersRes = await fetch(`${API_URL}/players`, { headers });
-        if (playersRes.ok) {
-          const playersData = await playersRes.json();
-          setPlayers(playersData);
-        }
-      } catch (err: any) {
-        console.error("Erreur chargement données:", err);
-      } finally {
-        setLoadingData(false);
-      }
-    };
-
-    loadData();
+    loadTournaments();
   }, []);
 
-  // Filtrer les poules du tournoi sélectionné
-  const filteredPools = pools.filter(
-    (p) => p.tournament_id === Number(formData.tournament_id)
-  );
+  useEffect(() => {
+    if (formData.tournament_id) {
+      loadPools(parseInt(formData.tournament_id));
+    }
+  }, [formData.tournament_id]);
 
-  // Filtrer les joueurs (si vous avez un lien tournament-player)
-  const availablePlayers = players;
+  useEffect(() => {
+    if (formData.pool_id) {
+      loadPlayers(parseInt(formData.pool_id));
+    }
+  }, [formData.pool_id]);
 
-  // Joueurs disponibles pour joueur 2 (exclure joueur 1)
-  const availablePlayers2 = availablePlayers.filter(
-    (p) => p.id !== Number(formData.player1_id)
-  );
-
-  // Soumettre le formulaire
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const loadTournaments = async () => {
     try {
       setLoading(true);
-      setError("");
-      setSuccess(false);
-
-      // Validation
-      if (!formData.tournament_id) {
-        throw new Error("Veuillez sélectionner un tournoi");
+      const token = user?.token || localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
       }
 
-      const token = localStorage.getItem("token");
-
-      // Préparer les données
-      const payload = {
-        tournament_id: Number(formData.tournament_id),
-        pool_id: formData.pool_id ? Number(formData.pool_id) : null,
-        player1_id: formData.player1_id ? Number(formData.player1_id) : null,
-        player2_id: formData.player2_id ? Number(formData.player2_id) : null,
-        round: formData.round,
-        match_date: formData.match_date || null,
-        court: formData.court || null,
-      };
-
-      const response = await fetch(`${API_URL}/matches`, {
-        method: "POST",
+      console.log("Chargement des tournois...");
+      const response = await fetch(`${API_URL}/tournaments`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erreur lors de la création");
+        throw new Error(`Erreur HTTP: ${response.status}`);
       }
 
-      setSuccess(true);
+      const data = await response.json();
+      console.log(" Réponse API tournois:", data);
 
-      // Redirection après 2 secondes
-      setTimeout(() => {
-        navigate("/matches");
-      }, 2000);
-    } catch (err: any) {
-      setError(err.message);
+      let tournamentsData: Tournament[] = [];
+      if (Array.isArray(data)) {
+        tournamentsData = data;
+      } else if (data.tournaments && Array.isArray(data.tournaments)) {
+        tournamentsData = data.tournaments;
+      } else if (data.data && Array.isArray(data.data)) {
+        tournamentsData = data.data;
+      }
+
+      console.log(" Tournois chargés:", tournamentsData);
+      setTournaments(tournamentsData);
+      setError("");
+    } catch (err) {
+      console.error(" Erreur chargement tournois:", err);
+      setError("Erreur lors du chargement des tournois");
+      setTournaments([]);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loadingData) {
+  const loadPools = async (tournamentId: number) => {
+    try {
+      const token = user?.token || localStorage.getItem("token");
+      if (!token) return;
+
+      console.log(" Chargement des poules pour tournoi:", tournamentId);
+      const response = await fetch(
+        `${API_URL}/pools/tournament/${tournamentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(" Réponse API poules:", data);
+      let poolsData: Pool[] = [];
+      if (Array.isArray(data)) {
+        poolsData = data;
+      } else if (data.pools && Array.isArray(data.pools)) {
+        poolsData = data.pools;
+      } else if (data.data && Array.isArray(data.data)) {
+        poolsData = data.data;
+      }
+
+      console.log(" Poules chargées:", poolsData);
+      setPools(poolsData);
+      setFormData((prev) => ({ ...prev, pool_id: "" }));
+    } catch (err) {
+      console.error("Erreur chargement poules:", err);
+      setError("Erreur lors du chargement des poules");
+      setPools([]);
+    }
+  };
+
+  const loadPlayers = async (poolId: number) => {
+    try {
+      const token = user?.token || localStorage.getItem("token");
+      if (!token) return;
+
+      console.log(" Chargement des joueurs pour poule:", poolId);
+      const response = await fetch(`${API_URL}/pools/${poolId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(" Réponse API joueurs:", data);
+      let playersData: Player[] = [];
+      if (Array.isArray(data)) {
+        playersData = data;
+      } else if (data.players && Array.isArray(data.players)) {
+        playersData = data.players;
+      } else if (data.data && Array.isArray(data.data)) {
+        playersData = data.data;
+      }
+
+      console.log(" Joueurs chargés:", playersData);
+      setPlayers(playersData);
+      setFormData((prev) => ({ ...prev, player1_id: "", player2_id: "" }));
+    } catch (err) {
+      console.error(" Erreur chargement joueurs:", err);
+      setError("Erreur lors du chargement des joueurs");
+      setPlayers([]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    if (formData.player1_id === formData.player2_id) {
+      setError("Les deux joueurs doivent être différents");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const token = user?.token || localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      const matchData = {
+        tournament_id: parseInt(formData.tournament_id),
+        pool_id: parseInt(formData.pool_id),
+        player1_id: parseInt(formData.player1_id),
+        player2_id: parseInt(formData.player2_id),
+        match_date: formData.match_date || null,
+        match_time: formData.match_time || null,
+        court_number: formData.court_number
+          ? parseInt(formData.court_number)
+          : null,
+        round: parseInt(formData.round),
+        status: "scheduled",
+      };
+
+      console.log("Envoi des données:", matchData);
+
+      const response = await fetch(`${API_URL}/matches`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(matchData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Erreur lors de la création du match"
+        );
+      }
+
+      const result = await response.json();
+      console.log("Match créé:", result);
+
+      setSuccess("Match créé avec succès !");
+      setTimeout(() => {
+        navigate("/matches");
+      }, 1500);
+    } catch (err: any) {
+      console.error(" Erreur création match:", err);
+      setError(err.message || "Erreur lors de la création du match");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
     return (
       <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
-        minHeight="400px"
+        minHeight="60vh"
       >
         <CircularProgress />
       </Box>
@@ -181,174 +300,241 @@ const MatchAdd: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* Header */}
-      <Stack direction="row" alignItems="center" spacing={2} mb={4}>
-        <Button
-          startIcon={<BackIcon />}
-          onClick={() => navigate("/matches")}
-          variant="outlined"
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Breadcrumbs
+        separator={<NavigateNextIcon fontSize="small" />}
+        sx={{ mb: 3 }}
+      >
+        <Link
+          component="button"
+          variant="body1"
+          onClick={() => navigate("/")}
+          underline="hover"
+          color="inherit"
         >
-          Retour
-        </Button>
-        <Typography variant="h4" fontWeight="bold">
-          Créer un match
+          Accueil
+        </Link>
+        <Link
+          component="button"
+          variant="body1"
+          onClick={() => navigate("/matches")}
+          underline="hover"
+          color="inherit"
+        >
+          Matchs
+        </Link>
+        <Typography color="primary">Nouveau match</Typography>
+      </Breadcrumbs>
+
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
+          <MatchIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+          Créer un nouveau match
         </Typography>
-      </Stack>
 
-      <Paper sx={{ p: 4 }}>
-        <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError("")}>
+            {error}
+          </Alert>
+        )}
+
+        {success && (
+          <Alert severity="success" sx={{ mb: 3 }}>
+            {success}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={3}>
-            {/* Messages */}
-            {error && <Alert severity="error">{error}</Alert>}
-            {success && (
-              <Alert severity="success">
-                Match créé avec succès ! Redirection...
-              </Alert>
-            )}
-
-            {/* Tournoi */}
             <TextField
               select
-              label="Tournoi *"
+              label="Tournoi"
+              name="tournament_id"
               value={formData.tournament_id}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  tournament_id: e.target.value,
-                  pool_id: "",
-                })
-              }
-              required
+              onChange={handleChange}
               fullWidth
+              required
             >
-              <MenuItem value="">Sélectionner un tournoi</MenuItem>
-              {tournaments.map((t) => (
-                <MenuItem key={t.id} value={t.id}>
-                  {t.name}
+              <MenuItem value="">
+                <em>Sélectionnez un tournoi</em>
+              </MenuItem>
+              {tournaments.length > 0 ? (
+                tournaments.map((tournament) => (
+                  <MenuItem
+                    key={tournament.id}
+                    value={tournament.id.toString()}
+                  >
+                    {tournament.name}
+                    <Chip
+                      label={tournament.status}
+                      size="small"
+                      sx={{ ml: 1 }}
+                      color={
+                        tournament.status === "ongoing"
+                          ? "success"
+                          : tournament.status === "upcoming"
+                          ? "info"
+                          : "default"
+                      }
+                    />
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled>
+                  <em>Aucun tournoi disponible</em>
+                </MenuItem>
+              )}
+            </TextField>
+            <TextField
+              select
+              label="Poule"
+              name="pool_id"
+              value={formData.pool_id}
+              onChange={handleChange}
+              fullWidth
+              required
+              disabled={!formData.tournament_id}
+              helperText={
+                !formData.tournament_id
+                  ? "Sélectionnez d'abord un tournoi"
+                  : pools.length === 0
+                  ? "Aucune poule disponible pour ce tournoi"
+                  : ""
+              }
+            >
+              <MenuItem value="">
+                <em>Sélectionnez une poule</em>
+              </MenuItem>
+              {pools.map((pool) => (
+                <MenuItem key={pool.id} value={pool.id.toString()}>
+                  {pool.name} (Ordre: {pool.pool_order})
                 </MenuItem>
               ))}
             </TextField>
 
-            {/* Poule */}
-            {filteredPools.length > 0 && (
+            <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
                 select
-                label="Poule (optionnel)"
-                value={formData.pool_id}
-                onChange={(e) =>
-                  setFormData({ ...formData, pool_id: e.target.value })
-                }
+                label="Joueur 1"
+                name="player1_id"
+                value={formData.player1_id}
+                onChange={handleChange}
                 fullWidth
+                required
+                disabled={!formData.pool_id}
               >
-                <MenuItem value="">Aucune poule</MenuItem>
-                {filteredPools.map((p) => (
-                  <MenuItem key={p.id} value={p.id}>
-                    Poule {p.name}
-                  </MenuItem>
-                ))}
+                <MenuItem value="">
+                  <em>Sélectionnez le joueur 1</em>
+                </MenuItem>
+                {players
+                  .filter((p) => p.user_id.toString() !== formData.player2_id)
+                  .map((player) => (
+                    <MenuItem
+                      key={player.user_id}
+                      value={player.user_id.toString()}
+                    >
+                      {player.username}
+                      {player.full_name && ` (${player.full_name})`}
+                    </MenuItem>
+                  ))}
               </TextField>
-            )}
 
-            {/* Tour */}
-            <TextField
-              select
-              label="Tour *"
-              value={formData.round}
-              onChange={(e) =>
-                setFormData({ ...formData, round: e.target.value })
-              }
-              required
-              fullWidth
-            >
-              <MenuItem value="Poules">Poules</MenuItem>
-              <MenuItem value="1/16">1/16 de finale</MenuItem>
-              <MenuItem value="1/8">1/8 de finale</MenuItem>
-              <MenuItem value="1/4">1/4 de finale</MenuItem>
-              <MenuItem value="1/2">1/2 finale</MenuItem>
-              <MenuItem value="Finale">Finale</MenuItem>
-            </TextField>
-
-            {/* Joueur 1 */}
-            <TextField
-              select
-              label="Joueur 1 (optionnel)"
-              value={formData.player1_id}
-              onChange={(e) =>
-                setFormData({ ...formData, player1_id: e.target.value })
-              }
-              fullWidth
-            >
-              <MenuItem value="">À définir plus tard</MenuItem>
-              {availablePlayers.map((p) => (
-                <MenuItem key={p.id} value={p.id}>
-                  {p.first_name} {p.last_name}
-                </MenuItem>
-              ))}
-            </TextField>
-
-            {/* Joueur 2 */}
-            <TextField
-              select
-              label="Joueur 2 (optionnel)"
-              value={formData.player2_id}
-              onChange={(e) =>
-                setFormData({ ...formData, player2_id: e.target.value })
-              }
-              fullWidth
-              disabled={!formData.player1_id}
-            >
-              <MenuItem value="">À définir plus tard</MenuItem>
-              {availablePlayers2.map((p) => (
-                <MenuItem key={p.id} value={p.id}>
-                  {p.first_name} {p.last_name}
-                </MenuItem>
-              ))}
-            </TextField>
-
-            {/* Date */}
-            <TextField
-              type="datetime-local"
-              label="Date du match"
-              value={formData.match_date}
-              onChange={(e) =>
-                setFormData({ ...formData, match_date: e.target.value })
-              }
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-            />
-
-            {/* Court */}
-            <TextField
-              label="Court"
-              value={formData.court}
-              onChange={(e) =>
-                setFormData({ ...formData, court: e.target.value })
-              }
-              placeholder="ex: Central, Court 1..."
-              fullWidth
-            />
-
-            {/* Boutons */}
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button
-                variant="outlined"
-                onClick={() => navigate("/matches")}
-                disabled={loading}
+              <TextField
+                select
+                label="Joueur 2"
+                name="player2_id"
+                value={formData.player2_id}
+                onChange={handleChange}
+                fullWidth
+                required
+                disabled={!formData.pool_id}
               >
-                Annuler
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<SaveIcon />}
-                disabled={loading}
-              >
-                {loading ? "Création..." : "Créer le match"}
-              </Button>
-            </Stack>
+                <MenuItem value="">
+                  <em>Sélectionnez le joueur 2</em>
+                </MenuItem>
+                {players
+                  .filter((p) => p.user_id.toString() !== formData.player1_id)
+                  .map((player) => (
+                    <MenuItem
+                      key={player.user_id}
+                      value={player.user_id.toString()}
+                    >
+                      {player.username}
+                      {player.full_name && ` (${player.full_name})`}
+                    </MenuItem>
+                  ))}
+              </TextField>
+            </Box>
+
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                label="Round/Tour"
+                name="round"
+                type="number"
+                value={formData.round}
+                onChange={handleChange}
+                fullWidth
+                required
+                inputProps={{ min: 1 }}
+                helperText="Numéro du tour (1, 2, 3...)"
+              />
+              <TextField
+                label="Numéro de court"
+                name="court_number"
+                type="number"
+                value={formData.court_number}
+                onChange={handleChange}
+                fullWidth
+                inputProps={{ min: 1 }}
+              />
+            </Box>
+
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                label="Date du match"
+                name="match_date"
+                type="date"
+                value={formData.match_date}
+                onChange={handleChange}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Heure du match"
+                name="match_time"
+                type="time"
+                value={formData.match_time}
+                onChange={handleChange}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            </Box>
           </Stack>
-        </form>
+
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ mt: 4 }}
+            justifyContent="flex-end"
+          >
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={() => navigate("/matches")}
+              disabled={saving}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
+              disabled={saving}
+            >
+              {saving ? "Création..." : "Créer le match"}
+            </Button>
+          </Stack>
+        </Box>
       </Paper>
     </Container>
   );
