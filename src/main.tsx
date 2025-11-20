@@ -4,6 +4,7 @@ import App from './App.tsx'
 import { UserProvider } from './user.tsx'
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Login } from './components/Login.tsx';
+import { TournamentForm } from './components/Tournaments/TournamentForm.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path='/' element={<App />}></Route>
           <Route path="/login" element={<Login />} />
+          <Route path="/TournamentForm" element={<TournamentForm />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>
