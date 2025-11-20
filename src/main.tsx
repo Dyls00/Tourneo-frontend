@@ -12,7 +12,6 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path='/' element={<App />}></Route>
           <Route path="/login" element={<Login />} />
-          <Route path="/login" element={<Login />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>
