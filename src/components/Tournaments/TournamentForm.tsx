@@ -1,6 +1,6 @@
 import { type FC } from "react";
 
-export const Tournaments: FC = () => {
+export const TournamentForm: FC = () => {
 
 return (
         <form className="flex flex-col items-center text-sm">

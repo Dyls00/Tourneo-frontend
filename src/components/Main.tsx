@@ -1,6 +1,7 @@
 import { useUser } from "../user";
 import image1 from "../assets/1.png";
-import { Tournaments } from "./Tournaments/Tournaments";
+import { TournamentForm } from "./Tournaments/TournamentForm";
+import { TournamentList } from "./Tournaments/tournamentList";
 import { Poules } from "./Poules/Poules";
 
 type MainProps = {
@@ -30,7 +31,8 @@ export const Main = ({ currentView }: MainProps) => {
                 )}
 
                 {/* VUE DYNAMIQUE */}
-                {user && currentView === "tournois" && <Tournaments />}
+                {user && currentView === "tournois" && <TournamentList />}
+                {user && currentView === "tournoiForm" && <TournamentForm />}
                 {user && currentView === "poules" && <Poules />}
 
             </div>
