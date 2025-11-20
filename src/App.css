@@ -55,12 +55,29 @@ text-align: justify;
     margin-left: 75%;
 }
 
+.main-content-tournament{
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+
+
+/***         ********/
+
+/***    Formulaire tournoi     ********/
+
+.tournament-form{
+      width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+}
 
 /***         ********/
 
 
-
-/***    Formulaire     ********/
+/***    Formulaire  inscription et connexion   ********/
 
 .log{
     width: 100%;

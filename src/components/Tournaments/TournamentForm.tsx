@@ -1,31 +1,127 @@
 import { type FC } from "react";
+import { useNavigate } from "react-router";
+import {
+    FormControl,
+    FormLabel,
+} from "@mui/material";
+import { useForm } from "react-hook-form";
+import { useTournament } from "../../tournoi";
+import { useUser } from "../../user";
 
 export const TournamentForm: FC = () => {
 
-return (
-        <form className="flex flex-col items-center text-sm">
-            <p className="text-lg text-blue-600 font-medium pb-2">Contact Us</p>
-            <h1 className="text-4xl font-semibold text-slate-700 pb-4">Get in touch with us</h1>
-            <p className="text-sm text-gray-500 text-center pb-10">Lorem Ipsum is simply dummy text of the printing and typesetting industry.<br />Lorem Ipsum has been the industry's standard dummy text.</p>
-            
-            <div className="flex flex-col md:flex-row items-center gap-8 w-[350px] md:w-[700px]">
-                <div className="w-full">
-                    <label className="text-black/70" htmlFor="name">Your Name</label>
-                    <input className="h-12 p-2 mt-2 w-full border border-gray-500/30 rounded outline-none focus:border-indigo-300" type="text" required />
-                </div>
-                <div className="w-full">
-                    <label className="text-black/70" htmlFor="name">Your Email</label>
-                    <input className="h-12 p-2 mt-2 w-full border border-gray-500/30 rounded outline-none focus:border-indigo-300" type="email" required />
-                </div>
-            </div>
-        
-            <div className="mt-6 w-[350px] md:w-[700px]">
-                <label className="text-black/70" htmlFor="name">Message</label>
-                <textarea className="w-full mt-2 p-2 h-40 border border-gray-500/30 rounded resize-none outline-none focus:border-indigo-300" required></textarea>
-            </div>
-        
-            <button type="submit" className="mt-5 bg-indigo-600 text-white h-12 w-56 px-4 rounded active:scale-95 transition">Send Message</button>
-        </form>
-    );
+const navigate = useNavigate();
+const { setTournament } = useTournament();
+const { user } = useUser();
 
+const tournamentForm = useForm({
+    defaultValues: {
+        name: "",
+        description: "",
+        start_date: "",
+        end_date: "",
+        min_players: 0,
+        max_players: 0,
+        etat: "registration",
+        organizer_id: user?.id,
+        default_win_score_set1: 0,
+        default_win_score_set2: 0,
+        default_loss_score_set1: 0,
+        default_loss_score_set2: 0,
+        forfeit_deadline_hours: 0,
+    },
+});
+
+const onCreateTournament = async (data: any) => {
+    const res = await fetch("http://localhost:3000/api/tournaments/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+
+    const json = await res.json();
+    console.log(json);
+    console.log(data);
+    
+
+    if (json.success === false) {
+        alert(json.message);
+        return;
+    }
+
+    if (json?.data?.tournament) {
+        setTournament(json.data.tournament);
+        navigate(`/`);
+        //navigate(`/tournament/${json.data.tournament.id}`);
+    }
+};
+
+
+    return (
+        <div className="tournament-form">
+            <div className="wrapper">
+                <div className="card-switch">
+                    <div className="flip-card__inner">
+                        <div className="flip-card__front">
+                            <div className="title">Votre tournoi</div>
+                            <form
+                                className="flip-card__form"
+                                action="POST"
+                                onSubmit={tournamentForm.handleSubmit(onCreateTournament)}
+                            >
+                                <input
+                                    className="flip-card__input"
+                                    placeholder="Nom du tournoi"
+                                    type="name"
+                                    defaultValue=""
+                                    {...tournamentForm.register("name", { required: true })} />
+                                <input
+                                    className="flip-card__input"
+                                    placeholder="Description"
+                                    type="text"
+                                    defaultValue=""
+                                    {...tournamentForm.register("description", { required: true })} />
+                                    <label>Date de début</label>
+                                    <input
+                                    className="flip-card__input"
+                                    type="date"
+                                    defaultValue=""
+                                    {...tournamentForm.register("start_date", { required: true })} />
+                                    <label>Date de fin</label>
+                                    <input
+                                    className="flip-card__input"
+                                    placeholder=""
+                                    type="date"
+                                    defaultValue=""
+                                    {...tournamentForm.register("end_date", { required: true })} />
+                                    <input
+                                    className="flip-card__input"
+                                    placeholder="Joueurs maximum"
+                                    type="number"
+                                    defaultValue=""
+                                    {...tournamentForm.register("max_players", { required: true })} />
+                                <input
+                                    className="flip-card__input"
+                                    placeholder="Joueurs minimum"
+                                    type="number"
+                                    defaultValue=""
+                                    {...tournamentForm.register("min_players", { required: true })} />
+                                <FormControl>
+                                    <FormLabel id="demo-radio">Status</FormLabel>
+                                    <select
+                                        className="flip-card__input"
+                                        {...tournamentForm.register("etat")}>
+                                        <option value="registration">Inscription</option>
+                                        <option value="pools">Poules</option>
+                                        <option value="finished">Terminé</option>
+                                    </select>
+                                </FormControl>
+                                <button className="flip-card__btn" type="submit">Confirm!</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }

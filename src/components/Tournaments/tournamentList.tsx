@@ -1,12 +1,8 @@
 import { type FC } from "react";
-import { useNavigate } from "react-router";
+import { useUser } from "../../user";
 
 export const TournamentList: FC = () => {
-
-    function navigateTo(){
-        const navigate = useNavigate();
-        navigate("/TournamentForm"); 
-    }
+    const { user } = useUser();
 
     return (
         <div className="main-tournois">
@@ -14,12 +10,11 @@ export const TournamentList: FC = () => {
                 <p className="t-footer t-size">Liste des tournois</p>
 
             </div>
+            {user?.role === "organizer" &&
             <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-right"
-            onClick={navigateTo}
-            >
-                <span>Créer</span>
-            </button>
-            <div className="col-2">
+            ><a href="/TournamentForm">Créer</a>
+            </button>}
+            <div className="col-2 mt-8">
                 <div
                     className="relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
                     <table className="w-full text-left table-auto min-w-max">

@@ -33,7 +33,7 @@ export const Login = () => {
     }
 
     if (json?.data.user) {
-      login({ id: json.data.user.id, name: json.data.user.name });     
+      login({ id: json.data.user.id, name: json.data.user.name, role: json.data.user.role, email: json.data.user.email});     
       navigate("/");          
     } 
   };
@@ -52,7 +52,7 @@ export const Login = () => {
     }
 
     if (json?.data.user) {
-      login({ id: json.data.user.id, name: json.data.user.name });    
+      login({ id: json.data.user.id, name: json.data.user.name, role: json.data.user.role, email: json.data.user.email});    
       navigate("/");          
     }
   };
