@@ -4,9 +4,10 @@ import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Main } from "./components/Main";
 
-const [view, setView] = useState("tournois");
 
 function App() {
+
+  const [view, setView] = useState("tournois");
   return (
     <div className="content">
       <Header changeView={setView}/>

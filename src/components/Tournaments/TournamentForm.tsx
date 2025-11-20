@@ -51,7 +51,6 @@ const onCreateTournament = async (data: any) => {
 
     if (json?.data?.tournament) {
         setTournament(json.data.tournament);
-        navigate(`/`);
         //navigate(`/tournament/${json.data.tournament.id}`);
     }
 };
