@@ -40,8 +40,8 @@ const onCreateTournament = async (data: any) => {
     });
 
     const json = await res.json();
-    console.log(json);
-    console.log(data);
+    navigate(`/`);
+
     
 
     if (json.success === false) {
