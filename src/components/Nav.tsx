@@ -1,50 +1,45 @@
-import { useState, type FC, useEffect } from "react"
+import { type FC } from "react";
+import { useNavigate } from "react-router";
 import { useUser } from "../user";
-import { NavLink } from "react-router";
 
-export const Nav: FC = () =>{
+export const Nav: FC = () => {
+    const { user, logout } = useUser();
+    const navigate = useNavigate();
 
-    const [timeToDisplay, setTimeToDisplay] = useState(new Date().toLocaleTimeString());
-    const {user,logout} = useUser();
+    function handleLogin() {
+        navigate({
+            pathname: "/login",
+        });
+    }
+    return (
+        <nav className="h-[70px] relative w-full px-6 md:px-16 lg:px-24 xl:px-32 flex items-center justify-between z-30 bg-gradient-to-r from-indigo-700 to-violet-500 transition-all">
 
-        useEffect(() => {
-            const id = setInterval(() => {
-                setTimeToDisplay(new Date().toLocaleTimeString())
-            },1000)
-
-            return () => {
-                clearInterval(id)
-            }
-        },[])
-
-     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-          <div className="nav-f">
-            <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-              <div className="navbar-nav">
-                <a className="navbar-brand" href="#">Home</a>
-                <a className="nav-item nav-link" href="#">Produits</a>
-                <a className="nav-item nav-link" href="#">Services</a>
-                <a className="nav-item nav-link" href="#">About</a>
-                <a className="nav-item nav-link" href="#">Contact</a>
-            </div>
-              {!user &&
-                <NavLink
-                to="/login"
-                className=""
-              >
-                Login
-              </NavLink>
-              }
-               <div className="user-k">
-                {user && <p className="col-10">Welcome, {user.name}
-                {user && <img className="col-2 img-fluid rounded avatar" src={user.avatar} alt={user.name} />}
-                {user && <button className="btn btn-primary mov" onClick={() => logout()}>Logout</button>}
-              </p>}
-          </div>
-            </div>
-          </div>
-          <p className="time">{timeToDisplay}</p>
+            <a href="https://prebuiltui.com">
+                <svg width="157" height="40" viewBox="0 0 157 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="40" y="32" font-family="'Poppins', sans-serif" font-size="25" fill="#ffffff">TOURNEO </text>
+                    <path d="m8.75 11.3 6.75 3.884 6.75-3.885M8.75 34.58v-7.755L2 22.939m27 0-6.75 3.885v7.754M2.405 15.408 15.5 22.954l13.095-7.546M15.5 38V22.939M29 28.915V16.962a2.98 2.98 0 0 0-1.5-2.585L17 8.4a3.01 3.01 0 0 0-3 0L3.5 14.377A3 3 0 0 0 2 16.962v11.953A2.98 2.98 0 0 0 3.5 31.5L14 37.477a3.01 3.01 0 0 0 3 0L27.5 31.5a3 3 0 0 0 1.5-2.585" stroke="#F5F5F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
+            {user && (
+            <ul className="text-white md:flex hidden items-center gap-10">
+                <li><a className="hover:text-white/70 transition" href="#">Tournois</a></li>
+                <li><a className="hover:text-white/70 transition" href="#">Matches</a></li>
+                <li><a className="hover:text-white/70 transition" href="#">Poules</a></li>
+                <li></li>
+                <li></li>
+                <li className="profil">Bienvenue {user.name} !</li>
+            </ul>
+                )}
+            {user && (
+            <button type="button" onClick={logout} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
+                Se déconnecter
+            </button>
+            )}
+            {!user && (
+            <button type="button" onClick={handleLogin} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
+                Se connecter
+            </button>
+            )}
         </nav>
-  );
-}
+    );
+};

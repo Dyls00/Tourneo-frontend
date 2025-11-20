@@ -1,85 +1,139 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import { useUser } from "../user";
+import { FormControl, FormLabel } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { useForm, Controller, type SubmitHandler } from "react-hook-form";
-import Input from "@material-ui/core/Input";
-import Button from '@mui/material/Button';
+import { useUser } from "../user";
 
+export const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useUser();
 
-export const Login: React.FC = () => {
+  const loginForm = useForm({
+    defaultValues: { email: "", password: "" },
+  });
 
-        const {login} = useUser();
+  const signupForm = useForm({
+    defaultValues: { name: "", email: "", password: "", role: "player" },
+  });
 
-        const navigate = useNavigate();
+  const onLogin = async (data: any) => {
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-        const { control, handleSubmit } = useForm({
-            defaultValues: {
-            email: '',
-            password: '',
-            }
-        });
+    const json = await res.json();
 
-    function handleLogin(){
-        login({
-                name: "Johane",
-                avatar: "https://picsum.photos/seed/remy/200"
-            });
-    };
-
-    const onSubmit: SubmitHandler<IFormInput> = data => {
-            if(data.password == "azerty"){
-            handleLogin();
-            navigate("/")
-        } else{
-            console.log(data.password)
-        }
-    };
-
-    interface IFormInput {
-    email: string;
-    password: string;
+    if (json.success === false) {
+      alert(json.message);
     }
 
+    if (json?.data.user) {
+      login({ id: json.data.user.id, name: json.data.user.name });
+      navigate("/");
+    }
+  };
+
+  const onSignup = async (data: any) => {
+    const res = await fetch("http://localhost:3000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const json = await res.json();
+
+    if (json.success === false) {
+      alert(json.message);
+    }
+
+    if (json?.data.user) {
+      login({ id: json.data.user.id, name: json.data.user.name });
+      navigate("/");
+    }
+  };
+
   return (
-    <form className="form_container" action="" onSubmit={handleSubmit(onSubmit)}>
-        <div className="elements">
-            <div className="title_container">
-                <p className="title">Login to your Account</p>
-                <span className="subtitle">
-                Get started with our app — just sign in and enjoy the experience.
-                </span>
+    <div className="log">
+      <div className="wrapper">
+        <div className="card-switch">
+          <label className="switch">
+            <input type="checkbox" className="toggle" />
+            <span className="slider" />
+            <span className="card-side" />
+            <div className="flip-card__inner">
+              <div className="flip-card__front">
+                <div className="title">Log in</div>
+                <form
+                  className="flip-card__form"
+                  action="POST"
+                  onSubmit={loginForm.handleSubmit(onLogin)}
+                >
+                  <input
+                    className="flip-card__input"
+                    placeholder="Email"
+                    type="email"
+                    defaultValue=""
+                    {...loginForm.register("email")}
+                  />
+                  <input
+                    className="flip-card__input"
+                    placeholder="Password"
+                    type="password"
+                    {...loginForm.register("password")}
+                  />
+                  <button className="flip-card__btn" type="submit">
+                    Let`s go!
+                  </button>
+                </form>
+              </div>
+              <div className="flip-card__back">
+                <div className="title">Sign up</div>
+                <form
+                  className="flip-card__form"
+                  action="POST"
+                  onSubmit={signupForm.handleSubmit(onSignup)}
+                >
+                  <input
+                    className="flip-card__input"
+                    placeholder="Name"
+                    type="name"
+                    defaultValue=""
+                    {...signupForm.register("name", { required: true })}
+                  />
+                  <input
+                    className="flip-card__input"
+                    placeholder="Email"
+                    type="email"
+                    defaultValue=""
+                    {...signupForm.register("email", { required: true })}
+                  />
+                  <input
+                    className="flip-card__input"
+                    placeholder="password"
+                    type="password"
+                    defaultValue=""
+                    {...signupForm.register("password", { required: true })}
+                  />
+                  <FormControl>
+                    <FormLabel id="demo-radio">Role</FormLabel>
+                    <select
+                      className="flip-card__input"
+                      {...signupForm.register("role")}
+                    >
+                      <option value="organizer">Organisateur</option>
+                      <option value="player">Joueur</option>
+                    </select>
+                  </FormControl>
+                  <button className="flip-card__btn" type="submit">
+                    Confirm!
+                  </button>
+                </form>
+              </div>
             </div>
-
-            <div className="_input">
-            <label htmlFor="Email">Email</label>
-            <Controller
-                name="email"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => <Input {...field} />}
-            />
-            </div>
-
-            <div className="_input">
-                <label htmlFor="password">Mot de passe</label>
-                <Controller
-                name="password"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => <Input {...field} />}
-                />
-            </div>
-
-            <Button variant="contained" type="submit" className="sign-in_btn">Sign in </Button>
-
-            <div className="separator">
-                <hr className="line" />
-                <span className="_span">Or</span>
-                <hr className="line" />
-            </div>
-            <Button variant="outlined" className="sign-in_btn">Sign in with Google</Button>
+          </label>
         </div>
-    </form>
+      </div>
+    </div>
   );
 };

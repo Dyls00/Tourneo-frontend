@@ -1,46 +1,67 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-refresh/only-export-components */
-
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 
 type User = {
-    id: string,
-    name: string,
-    avatar: string
+  id: string;
+  name: string;
+  email?: string;
+  role?: string;
+};
+
+type UserContextType = {
+  user: User | null;
+  login: (user: User) => void;
+  logout: () => void;
+};
+
+export const UserContext = createContext<UserContextType>({
+  user: null,
+  login: () => {},
+  logout: () => {},
+});
+
+export function useUser() {
+  return useContext(UserContext);
 }
 
-export function useUser(){
-    return useContext(UserContext)
+// Reducer pour gérer login/logout
+function userReducer(state: User | null, action: { type: string; payload?: User }) {
+  switch (action.type) {
+    case "login":
+      return action.payload || null;
+    case "logout":
+      return null;
+    default:
+      return state;
+  }
 }
 
-export const UserContext = createContext<{user : User | null,login : any, logout : any }>({user : null, login : () => {}, logout : () =>{}});
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  
+  const storedUser = typeof window !== "undefined" 
+    ? JSON.parse(localStorage.getItem("user") || "null")
+    : null;
 
-export function UserProvider({ children }: any) {
+  const [user, dispatch] = useReducer(userReducer, storedUser);
 
-    const [user, dispatch] = useReducer(userReducer, null);
-
-    function login(user: User){
-        dispatch({ type: 'login', payload: user})
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
     }
+  }, [user]);
 
-    function logout(){
-        dispatch({type:'logout'})
-    }
+  function login(user: User) {
+    dispatch({ type: "login", payload: user });
+  }
 
-    return (
-        <UserContext.Provider value={{user, login, logout}}>
-            {children}
-        </UserContext.Provider>
-    );
-}
+  function logout() {
+    dispatch({ type: "logout" });
+  }
 
-    function userReducer(user: any, action: any) {
-    switch (action.type) {
-      case 'login':
-        return action.payload
-      case 'logout':
-        return null;
-      default:
-        return user;
-    }
+  return (
+    <UserContext.Provider value={{ user, login, logout }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
