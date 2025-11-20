@@ -1,19 +1,16 @@
-import { useState } from 'react';
-import './App.css'
-import { Footer } from './components/Footer'
-import { Header } from './components/Header';
-import { Main } from './components/Main'
+import "./App.css";
+import { Footer } from "./components/Footer";
+import { Header } from "./components/Header";
+import { Main } from "./components/Main";
 
 function App() {
-
-  const [view, setView] = useState("tournois");
   return (
-    <div className='content'>
-      <Header changeView={setView}/>
-      <Main currentView={view}/>
-      <Footer/>
+    <div className="content">
+      <Header />
+      <Main />
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

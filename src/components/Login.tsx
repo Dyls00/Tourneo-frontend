@@ -23,20 +23,25 @@ export const Login = () => {
     });
 
     const json = await res.json();
+    console.log(json.data.token);
 
     if (json.success === false) {
       alert(json.message);
     }
 
     if (json?.data.user) {
-      login({ id: json.data.user.id, name: json.data.user.name });
+      login({
+        id: json.data.user.id,
+        name: json.data.user.name,
+        token: json.data.token,
+      });
       navigate("/");
     }
   };
 
   const onSignup = async (data: any) => {
     const res = await fetch("http://localhost:3000/api/auth/register", {
-      method: "POST",
+      method: "POSGETT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
@@ -48,7 +53,11 @@ export const Login = () => {
     }
 
     if (json?.data.user) {
-      login({ id: json.data.user.id, name: json.data.user.name });
+      login({
+        id: json.data.user.id,
+        name: json.data.user.name,
+        token: json.data.token,
+      });
       navigate("/");
     }
   };

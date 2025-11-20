@@ -1,12 +1,6 @@
+import type { FC } from "react";
 import { useUser } from "../user";
 import image1 from "../assets/1.png";
-import { TournamentForm } from "./Tournaments/TournamentForm";
-import { TournamentList } from "./Tournaments/tournamentList";
-import { Poules } from "./Poules/Poules";
-
-type MainProps = {
-  currentView: string;
-};
 
 export const Main: FC = () => {
   const { user } = useUser();
@@ -16,7 +10,7 @@ export const Main: FC = () => {
         {!user && (
           <div className="main-unlogged">
             <div>
-              <img src={image1} alt="" width={600} />
+              <img src={image1} alt="" width={500} />
             </div>
             <div className="main-text">
               <p>
