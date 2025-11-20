@@ -175,7 +175,7 @@ const PoolAdd: React.FC = () => {
       <Stack direction="row" alignItems="center" spacing={2} mb={4}>
         <Button
           startIcon={<BackIcon />}
-          onClick={() => navigate("/pools")}
+          onClick={() => navigate("/poollist")}
           variant="outlined"
         >
           Retour
@@ -211,20 +211,7 @@ const PoolAdd: React.FC = () => {
                 border: "1px solid",
                 borderColor: "info.main",
               }}
-            >
-              <Stack direction="row" spacing={2} alignItems="center">
-                <GroupsIcon color="info" />
-                <Box>
-                  <Typography variant="subtitle2" color="info.dark">
-                    💡 Conseil
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Une poule classique comporte 4 à 6 joueurs. Chacun joue
-                    contre tous les autres.
-                  </Typography>
-                </Box>
-              </Stack>
-            </Box>
+            ></Box>
 
             <Divider />
             <TextField

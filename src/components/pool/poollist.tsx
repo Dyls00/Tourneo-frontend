@@ -250,7 +250,7 @@ const PoolList: React.FC = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => navigate("/pools/add")}
+          onClick={() => navigate("/pooladd")}
         >
           Nouvelle Poule
         </Button>
