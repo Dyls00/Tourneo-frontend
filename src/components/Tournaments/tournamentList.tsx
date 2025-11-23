@@ -1,93 +1,139 @@
-import { type FC } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useUser } from "../../user";
+import { useTournament } from "../../tournoi";
+
+type Tournament = {
+    id: number;
+    name: string;
+    description?: string;
+    start_date: string;
+    end_date: string;
+    min_players: number;
+    max_players: number;
+    etat: "registration" | "pools" | "finished";
+    organizer_id: number;
+    default_win_score_set1: number;
+    default_win_score_set2: number;
+    default_loss_score_set1: number;
+    default_loss_score_set2: number;
+    forfeit_deadline_hours: number;
+    created_at: string;
+    updated_at: string;
+};
 
 export const TournamentList: FC = () => {
     const { user } = useUser();
+    const { setTournament } = useTournament();
+
+    const [tournaments, setTournaments] = useState<Tournament[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTournaments = async () => {
+            try {
+                const res = await fetch("http://localhost:3000/api/tournaments");
+                const json = await res.json();
+
+                if (json.success === false) {
+                    alert(json.message);
+                } else {
+                    setTournaments(json.data);
+                }
+            } catch (err) {
+                console.error("Erreur API :", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTournaments();
+    }, []);
+
+    function onSelectTournament(t: Tournament) {
+        setTournament(t);
+        window.location.href = `/tournament/${t.id}`;
+    }
 
     return (
         <div className="main-tournois">
             <div className="col-1">
                 <p className="t-footer t-size">Liste des tournois</p>
-
             </div>
-            {user?.role === "organizer" &&
-            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-right"
-            ><a href="/TournamentForm">Créer</a>
-            </button>}
+
+            {user?.role === "organizer" && (
+                <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-right"
+                ><a href="/TournamentForm">Créer</a>
+                </button>
+            )}
+
             <div className="col-2 mt-8">
-                <div
-                    className="relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+                <div className="relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl">
                     <table className="w-full text-left table-auto min-w-max">
-                        <thead>
+                        <thead className="bg-gray-300">
                             <tr>
-                                <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                        Nom
-                                    </p>
-                                </th>
-                                <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                        Description
-                                    </p>
-                                </th>
-                                <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                        Date de début
-                                    </p>
-                                </th>
-                                <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                        Organisateur
-                                    </p>
-                                </th>
-                                <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                        Status
-                                    </p>
-                                </th>
-                                <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70"></p>
-                                </th>
+                                <th className="p-4 border-b bg-blue-gray-50">Nom</th>
+                                <th className="p-4 border-b bg-blue-gray-50">Description</th>
+                                <th className="p-4 border-b bg-blue-gray-50">Début</th>
+                                <th className="p-4 border-b bg-blue-gray-50">Fin</th>
+                                <th className="p-4 border-b bg-blue-gray-50">Organisateur</th>
+                                <th className="p-4 border-b bg-blue-gray-50">État</th>
+                                <th className="p-4 border-b bg-blue-gray-50">Action</th>
                             </tr>
                         </thead>
+
                         <tbody>
-                            <tr>
-                                <td className="p-4 border-b border-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                                        John Michael
-                                    </p>
-                                </td>
-                                <td className="p-4 border-b border-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                                        Manager
-                                    </p>
-                                </td>
-                                <td className="p-4 border-b border-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                                        23/04/18
-                                    </p>
-                                </td>
-                                <td className="p-4 border-b border-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                                        Johane
-                                    </p>
-                                </td>
-                                <td className="p-4 border-b border-blue-gray-50">
-                                    <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                                        Matches
-                                    </p>
-                                </td>
-                                <td className="p-4 border-b border-blue-gray-50">
-                                    <a href="#" className="block font-sans text-sm antialiased font-medium leading-normal text-blue-gray-900">
-                                        Edit
-                                    </a>
-                                </td>
-                            </tr>
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={7} className="p-4 text-center">
+                                        Chargement...
+                                    </td>
+                                </tr>
+                            ) : tournaments.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="p-4 text-center">
+                                        Aucun tournoi trouvé
+                                    </td>
+                                </tr>
+                            ) : (
+                                tournaments.map((t) => (
+                                    <tr key={t.id}>
+                                        <td className="p-4 border-b">{t.name}</td>
+                                        <td className="p-4 border-b">{t.description || "-"}</td>
+                                        <td className="p-4 border-b">
+                                            {new Date(t.start_date).toLocaleDateString()}
+                                        </td>
+                                        <td className="p-4 border-b">
+                                            {new Date(t.end_date).toLocaleDateString()}
+                                        </td>
+                                        <td className="p-4 border-b">{t.organizer_id}</td>
+                                        <td className="p-4 border-b">{t.etat}</td>
+                                        {user?.role == "player" &&
+                                            <td className="p-4 border-b">
+                                                 <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
+                                                    Voir
+                                                </button>
+                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
+                                                    Participer
+                                                </button>
+                                            </td>
+                                        }
+                                        {user?.role == "organizer" &&
+                                            <td className="p-4 border-b">
+                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
+                                                    Modifier
+                                                </button>
+                                                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
+                                                    Supprimer
+                                                </button>
+                                            </td>
+                                        }
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     );
-
-}
+};

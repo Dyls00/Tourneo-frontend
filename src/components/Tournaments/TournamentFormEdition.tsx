@@ -14,7 +14,7 @@ const navigate = useNavigate();
 const { setTournament } = useTournament();
 const { user } = useUser();
 
-const tournamentForm = useForm({
+const tournamentFormEdition = useForm({
     defaultValues: {
         name: "",
         description: "",
@@ -23,7 +23,6 @@ const tournamentForm = useForm({
         min_players: 0,
         max_players: 0,
         etat: "registration",
-        organizer_name: user?.name,
         organizer_id: user?.id,
         default_win_score_set1: 0,
         default_win_score_set2: 0,
@@ -34,28 +33,29 @@ const tournamentForm = useForm({
 });
 
 const onCreateTournament = async (data: any) => {
-    if(data.min_players> data.max_players){
-        alert("Nombre de joueurs minimum supérieur");
-    } else if(data.end_date < data.start_date){
-         alert("Date de fin inférieur");
-    }
-
-    else{
-            const res = await fetch("http://localhost:3000/api/tournaments/", {
+    const res = await fetch("http://localhost:3000/api/tournaments/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
     });
 
     const json = await res.json();
+    navigate(`/`);
+
+    
+
+    if (json.success === false) {
+        alert(json.message);
+        return;
+    }
 
     if (json?.data?.tournament) {
         setTournament(json.data.tournament);
-    }
-
-    navigate('/');
+        //navigate(`/tournament/${json.data.tournament.id}`);
     }
 };
+
+
     return (
         <div className="tournament-form">
             <div className="wrapper">

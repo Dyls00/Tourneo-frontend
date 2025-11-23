@@ -24,7 +24,7 @@ export const Header = ({ changeView }) => {
                 </svg>
             </a>
             {user && (
-            <ul className="text-white md:flex hidden items-center gap-10">
+            <ul className="text-white cursor md:flex hidden items-center gap-10">
                 <li><a className="hover:text-white/70 transition" onClick={() => changeView("tournois")}>Tournois</a></li>
                 <li><a className="hover:text-white/70 transition" onClick={() => changeView("tournois")}>Matches</a></li>
                 <li><a className="hover:text-white/70 transition" onClick={() => changeView("poules")}>Poules</a></li>
