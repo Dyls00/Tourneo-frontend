@@ -54,6 +54,32 @@ export const TournamentList: FC = () => {
         window.location.href = `/tournament/${t.id}`;
     }
 
+
+     async function deleteTournament(id: number) {
+        const confirmDelete = window.confirm("Voulez-vous vraiment supprimer ce tournoi ?");
+        if (!confirmDelete) return;
+
+        try {
+            const res = await fetch(`http://localhost:3000/api/tournaments/${id}`, {
+                method: "DELETE",
+            });
+
+            const json = await res.json();
+
+            if (json.success === false) {
+                alert(json.message);
+                return;
+            }
+
+            setTournaments((prev) => prev.filter((t) => t.id !== id));
+
+            alert("Tournoi supprimé avec succès.");
+        } catch (err) {
+            console.error("Erreur suppression tournoi :", err);
+            alert("Impossible de supprimer le tournoi.");
+        }
+    }
+
     return (
         <div className="main-tournois">
             <div className="col-1">
@@ -122,7 +148,7 @@ export const TournamentList: FC = () => {
                                                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
                                                     Modifier
                                                 </button>
-                                                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
+                                                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => deleteTournament(t.id)}>
                                                     Supprimer
                                                 </button>
                                             </td>
