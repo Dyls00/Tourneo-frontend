@@ -11,6 +11,7 @@ type Tournament = {
     min_players: number;
     max_players: number;
     etat: "registration" | "pools" | "finished";
+    organizer_name: string;
     organizer_id: number;
     default_win_score_set1: number;
     default_win_score_set2: number;
@@ -97,7 +98,7 @@ export const TournamentList: FC = () => {
                     <table className="w-full text-left table-auto min-w-max">
                         <thead className="bg-gray-300">
                             <tr>
-                                <th className="p-4 border-b bg-blue-gray-50">Nom</th>
+                                <th className="p-4 border-b bg-blue-gray-50">Nom du tournoi</th>
                                 <th className="p-4 border-b bg-blue-gray-50">Description</th>
                                 <th className="p-4 border-b bg-blue-gray-50">Début</th>
                                 <th className="p-4 border-b bg-blue-gray-50">Fin</th>
@@ -131,7 +132,7 @@ export const TournamentList: FC = () => {
                                         <td className="p-4 border-b">
                                             {new Date(t.end_date).toLocaleDateString()}
                                         </td>
-                                        <td className="p-4 border-b">{t.organizer_id}</td>
+                                        <td className="p-4 border-b">{t.organizer_name}</td>
                                         <td className="p-4 border-b">{t.etat}</td>
                                         {user?.role == "player" &&
                                             <td className="p-4 border-b">
