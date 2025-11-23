@@ -41,7 +41,7 @@ export const Login = () => {
 
   const onSignup = async (data: any) => {
     const res = await fetch("http://localhost:3000/api/auth/register", {
-      method: "POSGETT",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });

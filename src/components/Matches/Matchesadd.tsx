@@ -40,7 +40,7 @@ interface Pool {
 
 interface Player {
   user_id: number;
-  username: string;
+  name: string;
   full_name?: string;
 }
 
@@ -98,39 +98,23 @@ const MatchAdd: React.FC = () => {
     try {
       setLoading(true);
       const token = user?.token || localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+      if (!token) return navigate("/login");
 
-      console.log("Chargement des tournois...");
       const response = await fetch(`${API_URL}/tournaments`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
       const data = await response.json();
-      console.log(" Réponse API tournois:", data);
-
-      let tournamentsData: Tournament[] = [];
-      if (Array.isArray(data)) {
-        tournamentsData = data;
-      } else if (data.tournaments && Array.isArray(data.tournaments)) {
-        tournamentsData = data.tournaments;
-      } else if (data.data && Array.isArray(data.data)) {
-        tournamentsData = data.data;
-      }
-
-      console.log(" Tournois chargés:", tournamentsData);
+      const tournamentsData: Tournament[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data.tournaments)
+        ? data.tournaments
+        : Array.isArray(data.data)
+        ? data.data
+        : [];
       setTournaments(tournamentsData);
-      setError("");
     } catch (err) {
-      console.error(" Erreur chargement tournois:", err);
+      console.error(err);
       setError("Erreur lors du chargement des tournois");
       setTournaments([]);
     } finally {
@@ -143,36 +127,25 @@ const MatchAdd: React.FC = () => {
       const token = user?.token || localStorage.getItem("token");
       if (!token) return;
 
-      console.log(" Chargement des poules pour tournoi:", tournamentId);
       const response = await fetch(
         `${API_URL}/pools/tournament/${tournamentId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
       const data = await response.json();
-      console.log(" Réponse API poules:", data);
-      let poolsData: Pool[] = [];
-      if (Array.isArray(data)) {
-        poolsData = data;
-      } else if (data.pools && Array.isArray(data.pools)) {
-        poolsData = data.pools;
-      } else if (data.data && Array.isArray(data.data)) {
-        poolsData = data.data;
-      }
-
-      console.log(" Poules chargées:", poolsData);
+      const poolsData: Pool[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data.pools)
+        ? data.pools
+        : Array.isArray(data.data)
+        ? data.data
+        : [];
       setPools(poolsData);
       setFormData((prev) => ({ ...prev, pool_id: "" }));
     } catch (err) {
-      console.error("Erreur chargement poules:", err);
+      console.error(err);
       setError("Erreur lors du chargement des poules");
       setPools([]);
     }
@@ -183,33 +156,20 @@ const MatchAdd: React.FC = () => {
       const token = user?.token || localStorage.getItem("token");
       if (!token) return;
 
-      console.log(" Chargement des joueurs pour poule:", poolId);
       const response = await fetch(`${API_URL}/pools/${poolId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
       const data = await response.json();
-      console.log(" Réponse API joueurs:", data);
-      let playersData: Player[] = [];
-      if (Array.isArray(data)) {
-        playersData = data;
-      } else if (data.players && Array.isArray(data.players)) {
-        playersData = data.players;
-      } else if (data.data && Array.isArray(data.data)) {
-        playersData = data.data;
-      }
-
-      console.log(" Joueurs chargés:", playersData);
+      const playersData: Player[] = (data.players || []).map((p: any) => ({
+        user_id: p.user_id,
+        name: p.name,
+        full_name: p.name,
+      }));
       setPlayers(playersData);
       setFormData((prev) => ({ ...prev, player1_id: "", player2_id: "" }));
     } catch (err) {
-      console.error(" Erreur chargement joueurs:", err);
+      console.error(err);
       setError("Erreur lors du chargement des joueurs");
       setPlayers([]);
     }
@@ -217,10 +177,7 @@ const MatchAdd: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -235,25 +192,19 @@ const MatchAdd: React.FC = () => {
     try {
       setSaving(true);
       const token = user?.token || localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+      if (!token) return navigate("/login");
+
+      const scheduled_date = formData.match_date
+        ? `${formData.match_date}T${formData.match_time || "00:00:00"}`
+        : null;
+
       const matchData = {
         tournament_id: parseInt(formData.tournament_id),
         pool_id: parseInt(formData.pool_id),
-        player1_id: parseInt(formData.player1_id),
-        player2_id: parseInt(formData.player2_id),
-        match_date: formData.match_date || null,
-        match_time: formData.match_time || null,
-        court_number: formData.court_number
-          ? parseInt(formData.court_number)
-          : null,
-        round: parseInt(formData.round),
-        status: "scheduled",
+        player1_id: formData.player1_id ? parseInt(formData.player1_id) : null,
+        player2_id: formData.player2_id ? parseInt(formData.player2_id) : null,
+        scheduled_date,
       };
-
-      console.log("Envoi des données:", matchData);
 
       const response = await fetch(`${API_URL}/matches`, {
         method: "POST",
@@ -272,14 +223,10 @@ const MatchAdd: React.FC = () => {
       }
 
       const result = await response.json();
-      console.log("Match créé:", result);
-
       setSuccess("Match créé avec succès !");
-      setTimeout(() => {
-        navigate("/matches");
-      }, 1500);
+      setTimeout(() => navigate("/matches"), 1500);
     } catch (err: any) {
-      console.error(" Erreur création match:", err);
+      console.error(err);
       setError(err.message || "Erreur lors de la création du match");
     } finally {
       setSaving(false);
@@ -337,7 +284,6 @@ const MatchAdd: React.FC = () => {
             {error}
           </Alert>
         )}
-
         {success && (
           <Alert severity="success" sx={{ mb: 3 }}>
             {success}
@@ -358,33 +304,13 @@ const MatchAdd: React.FC = () => {
               <MenuItem value="">
                 <em>Sélectionnez un tournoi</em>
               </MenuItem>
-              {tournaments.length > 0 ? (
-                tournaments.map((tournament) => (
-                  <MenuItem
-                    key={tournament.id}
-                    value={tournament.id.toString()}
-                  >
-                    {tournament.name}
-                    <Chip
-                      label={tournament.status}
-                      size="small"
-                      sx={{ ml: 1 }}
-                      color={
-                        tournament.status === "ongoing"
-                          ? "success"
-                          : tournament.status === "upcoming"
-                          ? "info"
-                          : "default"
-                      }
-                    />
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem disabled>
-                  <em>Aucun tournoi disponible</em>
+              {tournaments.map((t) => (
+                <MenuItem key={t.id} value={t.id.toString()}>
+                  {t.name} <Chip label={t.status} size="small" sx={{ ml: 1 }} />
                 </MenuItem>
-              )}
+              ))}
             </TextField>
+
             <TextField
               select
               label="Poule"
@@ -394,20 +320,13 @@ const MatchAdd: React.FC = () => {
               fullWidth
               required
               disabled={!formData.tournament_id}
-              helperText={
-                !formData.tournament_id
-                  ? "Sélectionnez d'abord un tournoi"
-                  : pools.length === 0
-                  ? "Aucune poule disponible pour ce tournoi"
-                  : ""
-              }
             >
               <MenuItem value="">
                 <em>Sélectionnez une poule</em>
               </MenuItem>
-              {pools.map((pool) => (
-                <MenuItem key={pool.id} value={pool.id.toString()}>
-                  {pool.name} (Ordre: {pool.pool_order})
+              {pools.map((p) => (
+                <MenuItem key={p.id} value={p.id.toString()}>
+                  {p.name} (Ordre: {p.pool_order})
                 </MenuItem>
               ))}
             </TextField>
@@ -428,13 +347,9 @@ const MatchAdd: React.FC = () => {
                 </MenuItem>
                 {players
                   .filter((p) => p.user_id.toString() !== formData.player2_id)
-                  .map((player) => (
-                    <MenuItem
-                      key={player.user_id}
-                      value={player.user_id.toString()}
-                    >
-                      {player.username}
-                      {player.full_name && ` (${player.full_name})`}
+                  .map((p) => (
+                    <MenuItem key={p.user_id} value={p.user_id.toString()}>
+                      {p.name}
                     </MenuItem>
                   ))}
               </TextField>
@@ -454,39 +369,12 @@ const MatchAdd: React.FC = () => {
                 </MenuItem>
                 {players
                   .filter((p) => p.user_id.toString() !== formData.player1_id)
-                  .map((player) => (
-                    <MenuItem
-                      key={player.user_id}
-                      value={player.user_id.toString()}
-                    >
-                      {player.username}
-                      {player.full_name && ` (${player.full_name})`}
+                  .map((p) => (
+                    <MenuItem key={p.user_id} value={p.user_id.toString()}>
+                      {p.name}
                     </MenuItem>
                   ))}
               </TextField>
-            </Box>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                label="Round/Tour"
-                name="round"
-                type="number"
-                value={formData.round}
-                onChange={handleChange}
-                fullWidth
-                required
-                inputProps={{ min: 1 }}
-                helperText="Numéro du tour (1, 2, 3...)"
-              />
-              <TextField
-                label="Numéro de court"
-                name="court_number"
-                type="number"
-                value={formData.court_number}
-                onChange={handleChange}
-                fullWidth
-                inputProps={{ min: 1 }}
-              />
             </Box>
 
             <Box sx={{ display: "flex", gap: 2 }}>
