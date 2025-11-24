@@ -1,11 +1,8 @@
 import { useNavigate } from "react-router";
 import { useUser } from "../user";
+import type { ViewProps } from "../utils/ViewProps";
 
-type HeaderProps = {
-  changeView: (view: string) => void;
-};
-
-export const Header = ({ changeView }) => {
+export const Header = ({ changeView }: ViewProps) => {
     const { user, logout } = useUser();
     const navigate = useNavigate();
 
@@ -26,8 +23,8 @@ export const Header = ({ changeView }) => {
             {user && (
             <ul className="text-white cursor md:flex hidden items-center gap-10">
                 <li><a className="hover:text-white/70 transition" onClick={() => changeView("tournois")}>Tournois</a></li>
-                <li><a className="hover:text-white/70 transition" onClick={() => changeView("tournois")}>Matches</a></li>
-                <li><a className="hover:text-white/70 transition" onClick={() => changeView("poules")}>Poules</a></li>
+                <li><a className="hover:text-white/70 transition" onClick={() => changeView("matches")}>Matches</a></li>
+                <li><a className="hover:text-white/70 transition" onClick={() => changeView("pool")}>Poules</a></li>
                 <li></li>
                 <li></li>
                 <li className="profil">Bienvenue {user.name} !</li>

@@ -50,37 +50,6 @@ export const TournamentView: FC = () => {
         fetchTournaments();
     }, []);
 
-    function onSelectTournament(t: Tournament) {
-        setTournament(t);
-        window.location.href = `/tournament/${t.id}`;
-    }
-
-
-     async function deleteTournament(id: number) {
-        const confirmDelete = window.confirm("Voulez-vous vraiment supprimer ce tournoi ?");
-        if (!confirmDelete) return;
-
-        try {
-            const res = await fetch(`http://localhost:3000/api/tournaments/${id}`, {
-                method: "DELETE",
-            });
-
-            const json = await res.json();
-
-            if (json.success === false) {
-                alert(json.message);
-                return;
-            }
-
-            setTournaments((prev) => prev.filter((t) => t.id !== id));
-
-            alert("Tournoi supprimé avec succès.");
-        } catch (err) {
-            console.error("Erreur suppression tournoi :", err);
-            alert("Impossible de supprimer le tournoi.");
-        }
-    }
-
     return (
         <div className="main-tournois">
             <div className="col-1">

@@ -13,11 +13,7 @@ import {
   Divider,
   Chip,
 } from "@mui/material";
-import {
-  Save as SaveIcon,
-  ArrowBack as BackIcon,
-  Groups as GroupsIcon,
-} from "@mui/icons-material";
+import { Save as SaveIcon, ArrowBack as BackIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import { useUser } from "../../user";
 
@@ -175,7 +171,7 @@ const PoolAdd: React.FC = () => {
       <Stack direction="row" alignItems="center" spacing={2} mb={4}>
         <Button
           startIcon={<BackIcon />}
-          onClick={() => navigate("/poollist")}
+          onClick={() => navigate("/")}
           variant="outlined"
         >
           Retour

@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../../user";
 import { useTournament } from "../../tournoi";
 
@@ -22,7 +22,7 @@ type Tournament = {
     updated_at: string;
 };
 
-export const TournamentList: FC = () => {
+export const TournamentList = ({ changeView }) => {
     const { user } = useUser();
     const { setTournament } = useTournament();
 
@@ -89,7 +89,7 @@ export const TournamentList: FC = () => {
 
             {user?.role === "organizer" && (
                 <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-right"
-                ><a href="/TournamentForm">Créer</a>
+                onClick={() => changeView("tournoiForm")}>Créer
                 </button>
             )}
 

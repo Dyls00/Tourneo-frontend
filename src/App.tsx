@@ -10,8 +10,8 @@ function App() {
   const [view, setView] = useState("tournois");
   return (
     <div className="content">
-      <Header changeView={setView}/>
-      <Main currentView={view}/>
+      <Header currentView={view} changeView={setView}/>
+      <Main currentView={view} changeView={setView} />
       <Footer />
     </div>
   );

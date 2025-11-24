@@ -8,13 +8,13 @@ import { useForm } from "react-hook-form";
 import { useTournament } from "../../tournoi";
 import { useUser } from "../../user";
 
-export const TournamentForm: FC = () => {
+export const TournamentFormEdition: FC = () => {
 
 const navigate = useNavigate();
 const { setTournament } = useTournament();
 const { user } = useUser();
 
-const tournamentFormEdition = useForm({
+const TournamentFormEdition = useForm({
     defaultValues: {
         name: "",
         description: "",
@@ -66,50 +66,50 @@ const onCreateTournament = async (data: any) => {
                             <form
                                 className="flip-card__form"
                                 action="POST"
-                                onSubmit={tournamentFormEdition.handleSubmit(onCreateTournament)}
+                                onSubmit={TournamentFormEdition.handleSubmit(onCreateTournament)}
                             >
                                 <input
                                     className="flip-card__input"
                                     placeholder="Nom du tournoi"
                                     type="name"
                                     defaultValue=""
-                                    {...tournamentFormEdition.register("name", { required: true })} />
+                                    {...TournamentFormEdition.register("name", { required: true })} />
                                 <input
                                     className="flip-card__input"
                                     placeholder="Description"
                                     type="text"
                                     defaultValue=""
-                                    {...tournamentFormEdition.register("description", { required: true })} />
+                                    {...TournamentFormEdition.register("description", { required: true })} />
                                     <label>Date de début</label>
                                     <input
                                     className="flip-card__input"
                                     type="date"
                                     defaultValue=""
-                                    {...tournamentFormEdition.register("start_date", { required: true })} />
+                                    {...TournamentFormEdition.register("start_date", { required: true })} />
                                     <label>Date de fin</label>
                                     <input
                                     className="flip-card__input"
                                     placeholder=""
                                     type="date"
                                     defaultValue=""
-                                    {...tournamentFormEdition.register("end_date", { required: true })} />
+                                    {...TournamentFormEdition.register("end_date", { required: true })} />
                                     <input
                                     className="flip-card__input"
                                     placeholder="Joueurs maximum"
                                     type="number"
                                     defaultValue=""
-                                    {...tournamentFormEdition.register("max_players", { required: true })} />
+                                    {...TournamentFormEdition.register("max_players", { required: true })} />
                                 <input
                                     className="flip-card__input"
                                     placeholder="Joueurs minimum"
                                     type="number"
                                     defaultValue=""
-                                    {...tournamentFormEdition.register("min_players", { required: true })} />
+                                    {...TournamentFormEdition.register("min_players", { required: true })} />
                                 <FormControl>
                                     <FormLabel id="demo-radio">Status</FormLabel>
                                     <select
                                         className="flip-card__input"
-                                        {...tournamentFormEdition.register("etat")}>
+                                        {...TournamentFormEdition.register("etat")}>
                                         <option value="registration">Inscription</option>
                                         <option value="pools">Poules</option>
                                         <option value="finished">Terminé</option>

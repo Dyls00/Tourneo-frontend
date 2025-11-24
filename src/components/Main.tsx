@@ -1,17 +1,20 @@
 import { useUser } from "../user";
 import image1 from "../assets/1.png";
-import { TournamentForm } from "./Tournaments/TournamentForm";
 import { TournamentList } from "./Tournaments/tournamentList";
+import { TournamentView } from "./Tournaments/TournamentView";
+import MatchesList from "./Matches/MatchesList";
+import PoolList from "./pool/poollist";
+import { TournamentForm } from "./Tournaments/TournamentForm";
+import { TournamentFormEdition } from "./Tournaments/TournamentFormEdition";
+import MatchAdd from "./Matches/Matchesadd";
+import PoolAdd from "./pool/pooladd";
+import type { ViewProps } from "../utils/ViewProps"; 
 
-type MainProps = {
-    currentView: string;
-};
-
-export const Main = ({ currentView }: MainProps) => {
+export const Main = ({ currentView, changeView }: ViewProps) => {
     const { user } = useUser();
 
     return (
-        <main>
+        <main className="main-content">
             <div className="main-content">
 
                 {/* SI PAS CONNECTÉ */}
@@ -30,9 +33,17 @@ export const Main = ({ currentView }: MainProps) => {
                 )}
 
                 {/* VUE DYNAMIQUE */}
-                {user && currentView === "tournois" && <TournamentList />}
-                {user && currentView === "tournoiForm" && <TournamentForm />}
+                {user && currentView === "tournois" && (
+                    <TournamentList changeView={changeView} />
+                )}
 
+                {user && currentView === "tournoiView" && <TournamentView />}
+                {user && currentView === "tournoiForm" && <TournamentForm />}
+                {user && currentView === "tournoiFormEdition" && <TournamentFormEdition />}
+                {user && currentView === "matches" && <MatchesList  currentView={currentView} changeView={changeView}/>}
+                {user && currentView === "matchadd" && <MatchAdd />}
+                {user && currentView === "pool" && <PoolList currentView={currentView} changeView={changeView}/>}
+                {user && currentView === "pooladd" && <PoolAdd />}
             </div>
         </main>
     );

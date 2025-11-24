@@ -30,6 +30,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import { useUser } from "../../user";
+import type { ViewProps } from "../../utils/ViewProps";
 
 const API_URL = "http://localhost:3000/api";
 
@@ -49,7 +50,7 @@ interface Tournament {
   status: string;
 }
 
-const PoolList: React.FC = () => {
+const PoolList: React.FC<ViewProps> = ({ changeView }) => {
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -138,6 +139,7 @@ const PoolList: React.FC = () => {
           }));
 
           allPools = poolsWithTournament;
+          console.log(" Total poules chargées:", poolsWithTournament);
         }
       } else {
         const poolPromises = tournaments.map(async (tournament) => {
@@ -250,7 +252,7 @@ const PoolList: React.FC = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => navigate("/pooladd")}
+          onClick={() => changeView("pooladd")}
         >
           Nouvelle Poule
         </Button>
