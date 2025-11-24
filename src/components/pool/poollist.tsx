@@ -138,6 +138,7 @@ const PoolList: React.FC = () => {
           }));
 
           allPools = poolsWithTournament;
+          console.log(" Total poules chargées:", poolsWithTournament);
         }
       } else {
         const poolPromises = tournaments.map(async (tournament) => {
