@@ -55,6 +55,11 @@ export const TournamentList = ({ changeView }) => {
         window.location.href = `/tournament/${t.id}`;
     }
 
+    function onEditTournament(t: Tournament) {
+    setTournament(t);  
+    changeView("tournoiFormEdition"); 
+}
+
 
      async function deleteTournament(id: number) {
         const confirmDelete = window.confirm("Voulez-vous vraiment supprimer ce tournoi ?");
@@ -146,7 +151,7 @@ export const TournamentList = ({ changeView }) => {
                                         }
                                         {user?.role == "organizer" &&
                                             <td className="p-4 border-b">
-                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
+                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onEditTournament(t)}>
                                                     Modifier
                                                 </button>
                                                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => deleteTournament(t.id)}>
