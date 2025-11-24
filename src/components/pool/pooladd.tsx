@@ -21,7 +21,7 @@ const API_URL = "http://localhost:3000/api";
 interface Tournament {
   id: number;
   name: string;
-  status: string;
+  etat: string;
 }
 interface FormData {
   tournament_id: string;
@@ -57,9 +57,6 @@ const PoolAdd: React.FC = () => {
 
       const token = user?.token || localStorage.getItem("token");
 
-      console.log("Token:", token ? "Présent " : "Absent ");
-      console.log("URL:", `${API_URL}/tournaments`);
-
       if (!token) {
         setError("Vous devez être connecté");
         navigate("/login");
@@ -74,21 +71,17 @@ const PoolAdd: React.FC = () => {
         },
       });
 
-      console.log(" Status:", response.status);
-      console.log(" OK:", response.ok);
-
       if (!response.ok) {
         throw new Error("Erreur chargement tournois");
       }
 
       const data = await response.json();
-      console.log("Données reçues:", data);
 
-      const tournamentsArray = data.tournaments || [];
+      const tournamentsArray = data.data || [];
       console.log(" Tournois extraits:", tournamentsArray);
 
       setTournaments(
-        tournamentsArray.filter((t: Tournament) => t.status !== "completed")
+        tournamentsArray.filter((t: Tournament) => t.etat !== "pools")
       );
 
       if (tournamentsArray.length === 0) {
@@ -242,9 +235,9 @@ const PoolAdd: React.FC = () => {
                     >
                       <Typography>{t.name}</Typography>
                       <Chip
-                        label={t.status === "upcoming" ? "À venir" : "En cours"}
+                        label={t.etat === "upcoming" ? "À venir" : "En cours"}
                         size="small"
-                        color={t.status === "upcoming" ? "warning" : "info"}
+                        color={t.etat === "upcoming" ? "warning" : "info"}
                       />
                     </Stack>
                   </MenuItem>
