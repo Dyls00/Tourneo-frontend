@@ -66,50 +66,50 @@ const onCreateTournament = async (data: any) => {
                             <form
                                 className="flip-card__form"
                                 action="POST"
-                                onSubmit={tournamentForm.handleSubmit(onCreateTournament)}
+                                onSubmit={tournamentFormEdition.handleSubmit(onCreateTournament)}
                             >
                                 <input
                                     className="flip-card__input"
                                     placeholder="Nom du tournoi"
                                     type="name"
                                     defaultValue=""
-                                    {...tournamentForm.register("name", { required: true })} />
+                                    {...tournamentFormEdition.register("name", { required: true })} />
                                 <input
                                     className="flip-card__input"
                                     placeholder="Description"
                                     type="text"
                                     defaultValue=""
-                                    {...tournamentForm.register("description", { required: true })} />
+                                    {...tournamentFormEdition.register("description", { required: true })} />
                                     <label>Date de début</label>
                                     <input
                                     className="flip-card__input"
                                     type="date"
                                     defaultValue=""
-                                    {...tournamentForm.register("start_date", { required: true })} />
+                                    {...tournamentFormEdition.register("start_date", { required: true })} />
                                     <label>Date de fin</label>
                                     <input
                                     className="flip-card__input"
                                     placeholder=""
                                     type="date"
                                     defaultValue=""
-                                    {...tournamentForm.register("end_date", { required: true })} />
+                                    {...tournamentFormEdition.register("end_date", { required: true })} />
                                     <input
                                     className="flip-card__input"
                                     placeholder="Joueurs maximum"
                                     type="number"
                                     defaultValue=""
-                                    {...tournamentForm.register("max_players", { required: true })} />
+                                    {...tournamentFormEdition.register("max_players", { required: true })} />
                                 <input
                                     className="flip-card__input"
                                     placeholder="Joueurs minimum"
                                     type="number"
                                     defaultValue=""
-                                    {...tournamentForm.register("min_players", { required: true })} />
+                                    {...tournamentFormEdition.register("min_players", { required: true })} />
                                 <FormControl>
                                     <FormLabel id="demo-radio">Status</FormLabel>
                                     <select
                                         className="flip-card__input"
-                                        {...tournamentForm.register("etat")}>
+                                        {...tournamentFormEdition.register("etat")}>
                                         <option value="registration">Inscription</option>
                                         <option value="pools">Poules</option>
                                         <option value="finished">Terminé</option>
