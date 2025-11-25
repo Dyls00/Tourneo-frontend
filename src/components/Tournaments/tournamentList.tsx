@@ -92,7 +92,7 @@ export const TournamentList = ({ changeView }) => {
                 <p className="t-footer t-size">Liste des tournois</p>
             </div>
 
-            {user?.role === "organizer" && (
+            {user?.role === "Organizer" && (
                 <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-right"
                 onClick={() => changeView("tournoiForm")}>Créer
                 </button>
@@ -139,7 +139,7 @@ export const TournamentList = ({ changeView }) => {
                                         </td>
                                         <td className="p-4 border-b">{t.organizer_name}</td>
                                         <td className="p-4 border-b">{t.etat}</td>
-                                        {user?.role == "player" &&
+                                        {user?.role == "Player" &&
                                             <td className="p-4 border-b">
                                                  <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onSelectTournament(t)}>
                                                     Voir
@@ -149,7 +149,7 @@ export const TournamentList = ({ changeView }) => {
                                                 </button>
                                             </td>
                                         }
-                                        {user?.role == "organizer" &&
+                                        {user?.role == "Organizer" &&
                                             <td className="p-4 border-b">
                                                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={() => onEditTournament(t)}>
                                                     Modifier

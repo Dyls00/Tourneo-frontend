@@ -1,16 +1,9 @@
-import { useNavigate } from "react-router";
 import { useUser } from "../user";
 import type { ViewProps } from "../utils/ViewProps";
 
 export const Header = ({ changeView }: ViewProps) => {
-    const { user, logout } = useUser();
-    const navigate = useNavigate();
+    const { user } = useUser();
 
-    function handleLogin() {
-        navigate({
-            pathname: "/login",
-        });
-    }
     return (
         <nav className="h-[70px] relative w-full px-6 md:px-16 lg:px-24 xl:px-32 flex items-center justify-between z-30 bg-gradient-to-r from-indigo-700 to-violet-500 transition-all">
 
@@ -31,12 +24,12 @@ export const Header = ({ changeView }: ViewProps) => {
             </ul>
                 )}
             {user && (
-            <button type="button" onClick={logout} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
-                Se déconnecter
+            <button type="button" onClick={() => changeView("profil")} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
+                Mon profil
             </button>
             )}
             {!user && (
-            <button type="button" onClick={handleLogin} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
+            <button type="button" onClick={() => changeView("login")} className="bg-white cursor text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
                 Se connecter
             </button>
             )}

@@ -7,7 +7,7 @@ import { Main } from "./components/Main";
 
 function App() {
 
-  const [view, setView] = useState("tournois");
+  const [view, setView] = useState("mainview");
   return (
     <div className="content">
       <Header currentView={view} changeView={setView}/>

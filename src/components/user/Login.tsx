@@ -3,12 +3,10 @@ import {
     FormLabel,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
 import { useUser } from "../../user";
 
-export const Login = () => {
+export const Login = ({ changeView }) => {
 
-      const navigate = useNavigate();
       const { login } = useUser();
 
     const loginForm = useForm({
@@ -16,7 +14,7 @@ export const Login = () => {
     });
 
     const signupForm = useForm({
-        defaultValues: { name: "", email: "", password: "", role: "player" }
+        defaultValues: { name: "", email: "", password: "", role: "player", tel:"" }
     });
 
     const onLogin = async (data:any) => {
@@ -27,6 +25,7 @@ export const Login = () => {
     });
  
     const json = await res.json();
+    console.log(json?.data.user);
 
     if(json.success === false){
     alert(json.message);
@@ -37,8 +36,10 @@ export const Login = () => {
         token: json.data.token,
         name: json.data.user.name, 
         role: json.data.user.role, 
-        email: json.data.user.email});     
-      navigate("/");          
+        tel: json.data.user.tel, 
+        email: json.data.user.email});    
+        
+        changeView("tournois");
     } 
   };
 
@@ -60,9 +61,13 @@ export const Login = () => {
         name: json.data.user.name, 
         role: json.data.user.role,
         token: json.data.token,
-        email: json.data.user.email});    
-      navigate("/");          
+        tel: json.data.user.tel,
+        email: json.data.user.email});            
     }
+
+    if (json?.data.user) {
+    changeView("tournois");
+}
   };
 
     return (
@@ -111,6 +116,12 @@ export const Login = () => {
                                         type="email"
                                         defaultValue=""
                                         {...signupForm.register("email", { required: true })} />
+                                        <input
+                                        className="flip-card__input"
+                                        placeholder="Phone number"
+                                        type="tel"
+                                        defaultValue=""
+                                        {...signupForm.register("tel", { required: true })} />
                                     <input
                                         className="flip-card__input"
                                         placeholder="password"
@@ -122,8 +133,8 @@ export const Login = () => {
                                         <select
                                             className="flip-card__input"
                                             {...signupForm.register("role")}>
-                                            <option value="organizer">Organisateur</option>
-                                            <option value="player">Joueur</option>
+                                            <option value="Organizer">Organisateur</option>
+                                            <option value="Player">Joueur</option>
                                         </select>
                                     </FormControl>
                                     <button className="flip-card__btn" type="submit">Confirm!</button>
