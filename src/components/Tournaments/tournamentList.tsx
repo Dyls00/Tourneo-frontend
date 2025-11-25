@@ -38,7 +38,7 @@ export const TournamentList = ({ changeView }) => {
                 if (json.success === false) {
                     alert(json.message);
                 } else {
-                    setTournaments(json.data);
+                    setTournaments(json.tournaments);
                 }
             } catch (err) {
                 console.error("Erreur API :", err);

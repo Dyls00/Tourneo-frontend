@@ -24,7 +24,7 @@ export const Main = ({ currentView, changeView }: ViewProps) => {
                 {user && currentView === "tournois" && (
                     <TournamentList changeView={changeView} />
                 )}
-                {!user && currentView === "login" && <Login changeView={changeView}/>}
+                {!user && currentView ==="login" && <Login changeView={changeView}/>}
                 {user && currentView === "profil" && <Profil changeView={changeView}/>}
                 {user && currentView === "tournoiView" && <TournamentView />}
                 {user && currentView === "tournoiForm" && <TournamentForm />}

@@ -10,6 +10,7 @@ type Tournament = {
   max_players: number;
   etat: "registration" | "pools" | "finished";
   organizer_id: number;
+  organizer_name?: string;
   default_win_score_set1: number;
   default_win_score_set2: number;
   default_loss_score_set1: number;
