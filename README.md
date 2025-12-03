@@ -1,4 +1,17 @@
 # React + TypeScript + Vite
+Auto-evaluation :
+
+On peut s'inscrire à l'application (nom, mail, numérode tel) : 1 point
+ On peut se connecter à l'application : 1 point
+ On peut créer un tournoi (nom, date de début, date de fin)(utilisateur connecté) : 1 point
+ On peut lister les tournois existants : 1 point
+ L' organisteur peut démarrer le tournoi, c-à-d stopper les inscriptions et créer les poules : 3
+ points
+ L' organisteur peut démarrer les tableaux, c-à-d stopper les poules et créer les tableaux : 3
+ points
+Un joueur peut saisir le résultat d'un match joué : 2 points
+
+Total : 12 points
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
